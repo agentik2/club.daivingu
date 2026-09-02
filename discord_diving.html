@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Клуб по дайвингу | Погружение в океан</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+            background: #00131f;
+            overflow-x: hidden;
+        }
+
+        .ocean {
+            position: fixed;
+            inset: 0;
+            z-index: -10;
+            background:
+                radial-gradient(circle at 50% 12%, rgba(120,235,255,.35), transparent 28%),
+                linear-gradient(to bottom, #43cfff 0%, #087eae 35%, #043d5b 68%, #01151f 100%);
+            animation: oceanPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes oceanPulse {
+            from { filter: brightness(1); }
+            to { filter: brightness(.82) saturate(1.12); }
+        }
+
+        .darkness {
+            position: fixed;
+            inset: 0;
+            z-index: -5;
+            pointer-events: none;
+            background: rgba(0,5,12,0);
+            transition: background .25s linear;
+        }
+
+        .surface {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 110px;
+            z-index: 5;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,.5), transparent 58%);
+            animation: surface 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes surface {
+            from { transform: scaleX(1); opacity: .75; }
+            to { transform: scaleX(1.08); opacity: 1; }
+        }
+
+        .light-rays {
+            position: fixed;
+            inset: -100px 0 0;
+            z-index: -2;
+            pointer-events: none;
+            opacity: .5;
+        }
+        .ray {
+            position: absolute;
+            top: -20%;
+            width: 180px;
+            height: 140%;
+            background: linear-gradient(to bottom, rgba(255,255,255,.25), transparent);
+            filter: blur(20px);
+            transform: rotate(18deg);
+            animation: rayMove 8s ease-in-out infinite alternate;
+        }
+        .ray:nth-child(1) { left: 5%; animation-delay: -2s; }
+        .ray:nth-child(2) { left: 30%; width: 250px; animation-delay: -5s; }
+        .ray:nth-child(3) { left: 65%; width: 150px; animation-delay: -1s; }
+        @keyframes rayMove {
+            from { transform: rotate(18deg) translateX(-40px); }
+            to { transform: rotate(22deg) translateX(80px); }
+        }
+
+        .bubbles {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            border: 1px solid rgba(255,255,255,.65);
+            border-radius: 50%;
+            background: rgba(255,255,255,.08);
+            animation: bubbleUp linear infinite;
+        }
+        @keyframes bubbleUp {
+            0% { transform: translateY(0) translateX(0) scale(.5); opacity: 0; }
+            10% { opacity: .8; }
+            100% { transform: translateY(-120vh) translateX(80px) scale(1.3); opacity: 0; }
+        }
+
+        .fish {
+            position: fixed;
+            z-index: 0;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,.25));
+            animation: swim linear infinite;
+        }
+        .fish1 { top: 22%; left: -100px; font-size: 55px; animation-duration: 18s; }
+        .fish2 { top: 46%; left: -150px; font-size: 75px; animation-duration: 24s; animation-delay: -8s; }
+        .fish3 { top: 70%; left: -120px; font-size: 45px; animation-duration: 30s; animation-delay: -15s; }
+        .fish4 { top: 86%; left: -100px; font-size: 65px; animation-duration: 22s; animation-delay: -4s; }
+        @keyframes swim {
+            0% { transform: translateX(0) translateY(0) scaleX(1); }
+            45% { transform: translateX(55vw) translateY(-30px) scaleX(1); }
+            50% { transform: translateX(60vw) translateY(10px) scaleX(-1); }
+            100% { transform: translateX(115vw) translateY(-20px) scaleX(-1); }
+        }
+
+        .corals {
+            position: fixed;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .coral {
+            position: absolute;
+            bottom: 0;
+            width: 16px;
+            border-radius: 50% 50% 0 0;
+            background: linear-gradient(90deg,#082b3b,#166276,#082b3b);
+            transform-origin: bottom;
+        }
+        .coral:nth-child(1){left:5%;height:75px;transform:rotate(-10deg)}
+        .coral:nth-child(2){left:17%;height:110px;transform:rotate(12deg)}
+        .coral:nth-child(3){left:32%;height:65px}
+        .coral:nth-child(4){left:52%;height:100px;transform:rotate(-15deg)}
+        .coral:nth-child(5){left:69%;height:80px;transform:rotate(10deg)}
+        .coral:nth-child(6){left:83%;height:105px;transform:rotate(-8deg)}
+
+        .discord-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 6%;
+            position: relative;
+            z-index: 3;
+        }
+
+        .discord-layout {
+            width: min(1100px, 100%);
+            display: grid;
+            grid-template-columns: 330px minmax(0, 1fr);
+            gap: 28px;
+            align-items: center;
+        }
+
+        .glass {
+            background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.045));
+            border: 1px solid rgba(255,255,255,.18);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 30px 90px rgba(0,0,0,.25);
+        }
+
+        .rules {
+            border-radius: 28px;
+            padding: 30px;
+            animation: rise .9s ease both;
+        }
+        .rules h2 {
+            font-size: 30px;
+            margin: 8px 0 22px;
+        }
+        .rules ol {
+            padding-left: 23px;
+            color: rgba(255,255,255,.82);
+            line-height: 1.65;
+        }
+        .rules li { margin-bottom: 13px; }
+        .rules li::marker { color: #8feeff; font-weight: 700; }
+
+        .discord-card {
+            min-height: 570px;
+            border-radius: 38px;
+            padding: 55px 65px;
+            position: relative;
+            overflow: hidden;
+            animation: rise 1.1s .12s ease both;
+        }
+        .discord-card::before {
+            content: "";
+            position: absolute;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            right: -120px;
+            top: -130px;
+            background: rgba(100,225,255,.15);
+            filter: blur(10px);
+        }
+
+        .diver {
+            position: absolute;
+            right: 45px;
+            bottom: 25px;
+            font-size: 115px;
+            transform: rotate(-12deg);
+            filter: drop-shadow(0 15px 20px rgba(0,0,0,.25));
+            animation: diverFloat 3.5s ease-in-out infinite;
+        }
+        @keyframes diverFloat {
+            0%,100% { transform: rotate(-12deg) translateY(0); }
+            50% { transform: rotate(-7deg) translateY(-15px); }
+        }
+
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 12px;
+            color: rgba(255,255,255,.72);
+        }
+
+        .discord-card h1 {
+            margin-top: 18px;
+            font-size: clamp(58px, 8vw, 105px);
+            line-height: .86;
+            text-transform: uppercase;
+            font-weight: 900;
+            text-shadow: 0 15px 45px rgba(0,0,0,.3);
+        }
+        .discord-card h1 span {
+            color: #a9efff;
+            text-shadow: 0 0 35px rgba(87,225,255,.35);
+        }
+        .discord-card p {
+            max-width: 600px;
+            margin: 32px 0;
+            color: rgba(255,255,255,.78);
+            font-size: 18px;
+            line-height: 1.65;
+        }
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 17px 28px;
+            border-radius: 999px;
+            background: white;
+            color: #075577;
+            text-decoration: none;
+            font-weight: 800;
+            box-shadow: 0 12px 40px rgba(0,0,0,.22);
+            transition: .3s;
+            position: relative;
+            z-index: 2;
+        }
+        .button:hover {
+            transform: translateY(-5px) scale(1.035);
+            box-shadow: 0 20px 55px rgba(0,0,0,.3);
+        }
+        .link {
+            margin-top: 15px;
+            color: rgba(255,255,255,.45);
+            font-size: 13px;
+        }
+
+        footer {
+            position: relative;
+            z-index: 4;
+            padding: 24px;
+            text-align: center;
+            background: #010d15;
+            color: rgba(255,255,255,.45);
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(45px) scale(.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 800px) {
+            .discord-page { padding: 35px 18px; }
+            .discord-layout { grid-template-columns: 1fr; }
+            .rules { order: 2; }
+            .discord-card { min-height: 500px; padding: 40px 28px; }
+            .discord-card h1 { font-size: clamp(55px, 17vw, 90px); }
+            .diver { right: 15px; bottom: 10px; font-size: 75px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =====================================================
+         ОКЕАН
+    ===================================================== -->
+
+    <div class="ocean"></div>
+
+    <div class="darkness"></div>
+
+    <div class="surface"></div>
+
+    <!-- Лучи света -->
+
+    <div class="light-rays">
+        <div class="ray"></div>
+        <div class="ray"></div>
+        <div class="ray"></div>
+    </div>
+
+    <!-- Рыбы -->
+
+    <div class="fish fish1">🐟</div>
+    <div class="fish fish2">🐠</div>
+    <div class="fish fish3">🐟</div>
+    <div class="fish fish4">🐡</div>
+
+    <!-- Пузырьки -->
+
+    <div class="bubbles" id="bubbles"></div>
+
+    <!-- Кораллы -->
+
+    <div class="corals">
+        <div class="coral"></div>
+        <div class="coral"></div>
+        <div class="coral"></div>
+        <div class="coral"></div>
+        <div class="coral"></div>
+        <div class="coral"></div>
+        <div class="coral"></div>
+    </div>
+
+
+    <!-- =====================================================
+         ГЛАВНЫЙ ЭКРАН
+    ===================================================== -->
+
+    <main>
+        <section class="discord-page">
+            <div class="discord-layout">
+                <aside class="rules glass">
+                    <div class="eyebrow">01 — ПРАВИЛА</div>
+                    <h2>Правила ДС</h2>
+                    <ol>
+                        <li>Уважай участников и администрацию.</li>
+                        <li>Без спама, флуда и рекламы.</li>
+                        <li>Не провоцируй конфликты и не оскорбляй других.</li>
+                        <li>Используй каналы по их назначению.</li>
+                        <li>Слушай администрацию — нарушения могут привести к бану.</li>
+                    </ol>
+                </aside>
+
+                <div class="discord-card glass">
+                    <div class="diver">🤿</div>
+                    <div class="eyebrow">DIVING CLUB • DISCORD</div>
+                    <h1>Дискорд<br><span>канал</span></h1>
+                    <p>Погружайся в наш подводный мир, общайся с участниками и присоединяйся к приключению.</p>
+                    <a class="button" href="https://discord.gg/QbX2zExrBX" target="_blank" rel="noopener">
+                        💬 ЗАЙТИ В DISCORD
+                    </a>
+                    <div class="link">discord.gg/QbX2zExrBX</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>🐠 Diving Club • Увидимся под водой</footer>
+
+
+
+    <script>
+        const bubbleContainer = document.getElementById("bubbles");
+
+        for (let i = 0; i < 34; i++) {
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+            const size = Math.random() * 14 + 4;
+            bubble.style.width = size + "px";
+            bubble.style.height = size + "px";
+            bubble.style.left = Math.random() * 100 + "%";
+            bubble.style.animationDuration = Math.random() * 10 + 7 + "s";
+            bubble.style.animationDelay = Math.random() * 10 + "s";
+            bubbleContainer.appendChild(bubble);
+        }
+
+        const darkness = document.querySelector(".darkness");
+        const rays = document.querySelector(".light-rays");
+        const surface = document.querySelector(".surface");
+        const ocean = document.querySelector(".ocean");
+        const fish = document.querySelectorAll(".fish");
+
+        window.addEventListener("scroll", () => {
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = maxScroll > 0 ? Math.min(window.scrollY / maxScroll, 1) : 0;
+
+            darkness.style.background = `rgba(0, 5, 12, ${progress * 0.72})`;
+            rays.style.opacity = Math.max(0.5 - progress * 0.55, 0);
+            surface.style.opacity = Math.max(1 - progress * 2.5, 0);
+            ocean.style.filter = `brightness(${1 - progress * 0.25})`;
+
+            fish.forEach((item, index) => {
+                item.style.marginTop = `${window.scrollY * (0.02 + index * 0.012)}px`;
+            });
+        });
+    </script>
+
+
+</body>
+</html>
